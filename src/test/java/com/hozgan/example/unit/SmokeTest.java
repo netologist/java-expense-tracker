@@ -1,4 +1,4 @@
-package com.hozgan.expensetracker.unit;
+package com.hozgan.example.unit;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

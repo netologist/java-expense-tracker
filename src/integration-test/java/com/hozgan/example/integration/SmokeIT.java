@@ -1,4 +1,4 @@
-package com.hozgan.expensetracker.integration;
+package com.hozgan.example.integration;
 
 import org.junit.jupiter.api.Test;
 

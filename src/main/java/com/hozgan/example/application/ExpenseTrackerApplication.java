@@ -1,4 +1,4 @@
-package com.hozgan.expensetracker.application;
+package com.hozgan.example.application;
 
 public final class ExpenseTrackerApplication {
   static void main(String[] args) {

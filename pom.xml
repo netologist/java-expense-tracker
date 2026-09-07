@@ -26,6 +26,7 @@
         <errorprone.version>2.50.0</errorprone.version>
         <archunit.version>1.5.0</archunit.version>
         <commons-lang3.version>3.20.0</commons-lang3.version>
+        <lombok.version>1.18.42</lombok.version>
 
         <!-- application libs -->
         <picocli.version>4.7.7</picocli.version>
@@ -69,6 +70,14 @@
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
             <version>${commons-lang3.version}</version>
+        </dependency>
+
+        <!-- Lombok -->
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>${lombok.version}</version>
+            <scope>provided</scope>
         </dependency>
 
         <!-- Error Prone -->
@@ -143,8 +152,21 @@
                 <configuration>
                     <release>${maven.compiler.release}</release>
 
+                    <annotationProcessorPaths>
+                        <path>
+                            <groupId>com.google.errorprone</groupId>
+                            <artifactId>error_prone_core</artifactId>
+                            <version>${errorprone.version}</version>
+                        </path>
+                        <path>
+                            <groupId>org.projectlombok</groupId>
+                            <artifactId>lombok</artifactId>
+                            <version>${lombok.version}</version>
+                        </path>
+                    </annotationProcessorPaths>
                     <compilerArgs>
                         <arg>-Xlint:all</arg>
+                        <arg>-Xlint:-processing</arg>
                         <arg>-Werror</arg>
                         <!-- error prone -->
                         <arg>-XDcompilePolicy=simple</arg>
@@ -203,7 +225,7 @@
                 <version>3.10.0</version>
                 <configuration>
                     <java>
-                        <googleJavaFormat />
+                        <googleJavaFormat/>
                     </java>
                 </configuration>
                 <executions>

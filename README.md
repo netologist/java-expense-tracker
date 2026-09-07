@@ -1,23 +1,20 @@
-# Java Maven Template
+# Expense Tracker
 
-A production-oriented, Spring-free Java Maven project template with a strong local and CI quality pipeline.
+A Springless Java CLI Expense Tracker application with AWS S3-compatible cloud synchronization and local JSON persistence.
 
-This template is designed as a solid starting point for Java backend and fintech projects that prefer:
+## Features
 
-* Plain Java over framework magic
-* Explicit configuration and dependencies
-* Strong compile-time checks
-* Automated formatting
-* Static analysis
-* Separate unit and integration tests
-* Architecture validation
-* Code coverage reporting
-* Container image builds without a Dockerfile
-* Simple and reproducible CI
-
-The template intentionally does **not** include Spring or application-specific dependencies.
-
----
+* **Springless Architecture**: Plain Java 25, clean architecture, manual dependency wiring.
+* **CLI Commands**:
+  * `add`: Record a new expense with monetary amounts, category, description, and date.
+  * `list`: Display all recorded expenses in a formatted table, sorted by date (newest first) and ID.
+  * `remove`: Remove an existing expense by ID.
+  * `sync push`: Upload local expenses to AWS S3 or MinIO.
+  * `sync pull`: Download expenses from S3/MinIO with overwrite protection (`--force`).
+* **Local JSON Persistence**: Atomic, human-readable JSON storage with persistence DTOs.
+* **Cloud Synchronization**: AWS SDK v2 abstraction supporting AWS S3 and MinIO object storage.
+* **Local MinIO Development**: Docker Compose environment with idempotent bucket provisioning.
+* **Testcontainers Integration**: Real S3 integration tests against MinIO in Docker.
 
 ## Philosophy
 
@@ -65,6 +62,193 @@ Dependencies such as the following should be introduced only when a real feature
 * **GitHub Actions**
 
 ---
+
+# CLI Commands
+
+The CLI binary or Maven runner provides the following command tree:
+
+```text
+expense-tracker
+├── add
+├── list
+├── remove
+└── sync
+    ├── push
+    └── pull
+```
+
+## 1. Add Expense
+
+Record a new expense:
+
+```bash
+expense-tracker add \
+  --amount 12.50 \
+  --currency GBP \
+  --category FOOD \
+  --description "Lunch"
+```
+
+Short options and custom date:
+
+```bash
+expense-tracker add \
+  -a 4.75 \
+  -c GBP \
+  --category TRANSPORT \
+  -d "Bus ticket" \
+  --date 2026-09-07
+```
+
+## 2. List Expenses
+
+Display all recorded expenses in a formatted table sorted by date descending (newest first) and ID:
+
+```bash
+expense-tracker list
+```
+
+Example output:
+
+```text
+ID                                    DATE        CATEGORY       AMOUNT        DESCRIPTION
+-----------------------------------------------------------------------------------------
+123e4567-e89b-12d3-a456-426614174000  2026-09-07  FOOD           GBP 12.50     Lunch
+```
+
+If no expenses exist, displays:
+
+```text
+No expenses found.
+```
+
+## 3. Remove Expense
+
+Remove an expense by UUID:
+
+```bash
+expense-tracker remove --id 123e4567-e89b-12d3-a456-426614174000
+```
+
+Short option:
+
+```bash
+expense-tracker remove -i 123e4567-e89b-12d3-a456-426614174000
+```
+
+Success output:
+
+```text
+Expense removed successfully.
+
+ID: 123e4567-e89b-12d3-a456-426614174000
+```
+
+If the expense does not exist:
+
+```text
+Expense not found: 123e4567-e89b-12d3-a456-426614174000
+```
+
+## 4. Sync Push
+
+Upload local expenses (`expenses.json`) to the configured S3 bucket:
+
+```bash
+expense-tracker sync push
+```
+
+Success output:
+
+```text
+Expenses synced successfully.
+
+Bucket: expense-tracker
+Object: expenses.json
+```
+
+## 5. Sync Pull
+
+Download expenses from S3 storage into the local data file:
+
+```bash
+expense-tracker sync pull
+```
+
+If the local file already exists, overwrite protection is enforced:
+
+```text
+Local data file already exists.
+
+Use --force to overwrite it.
+```
+
+To overwrite local data:
+
+```bash
+expense-tracker sync pull --force
+```
+
+---
+
+# Local MinIO Development Environment
+
+A Docker Compose setup is provided in `compose.yaml` to spin up a local S3-compatible MinIO object store with an idempotent bucket initialization service (`minio/mc`).
+
+### Start MinIO
+
+```bash
+docker compose up -d
+```
+
+This automatically:
+1. Starts the MinIO server.
+2. Waits until MinIO health check passes.
+3. Runs `minio/mc` to idempotently create the `expense-tracker` bucket.
+
+### Endpoints
+
+* **S3 API**: `http://localhost:9000`
+* **MinIO Console**: `http://localhost:9001`
+
+### Local Credentials (Development Only)
+
+* **Access Key**: `minioadmin`
+* **Secret Key**: `minioadmin`
+
+> **Warning**: These credentials are strictly for local development. Never use default credentials in production.
+
+### Stop MinIO
+
+```bash
+docker compose down
+```
+
+To completely wipe local MinIO data:
+
+```bash
+docker compose down -v
+```
+
+### Configuration
+
+Copy the sample environment file:
+
+```bash
+cp .env.example .env
+```
+
+Configure the following environment variables (or corresponding Java system properties):
+
+| Environment Variable | System Property | Description | Default |
+|---|---|---|---|
+| `EXPENSE_TRACKER_S3_BUCKET` | `expense.tracker.s3.bucket` | S3 bucket name | `expense-tracker` |
+| `EXPENSE_TRACKER_AWS_REGION` | `expense.tracker.aws.region` | AWS/MinIO region | `us-east-1` |
+| `EXPENSE_TRACKER_S3_ENDPOINT` | `expense.tracker.s3.endpoint` | S3 endpoint URL (MinIO) | (empty = AWS S3) |
+| `EXPENSE_TRACKER_S3_ACCESS_KEY` | `expense.tracker.s3.access.key` | Access key for MinIO | (empty = AWS chain) |
+| `EXPENSE_TRACKER_S3_SECRET_KEY` | `expense.tracker.s3.secret.key` | Secret key for MinIO | (empty = AWS chain) |
+| `EXPENSE_TRACKER_S3_OBJECT_KEY` | `expense.tracker.s3.object.key` | S3 object key | `expenses.json` |
+| `EXPENSE_TRACKER_DATA_FILE` | `expense.tracker.data.file` | Local JSON data path | `expenses.json` |
 
 # Project Structure
 

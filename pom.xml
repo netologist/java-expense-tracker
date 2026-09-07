@@ -9,11 +9,11 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.hozgan</groupId>
-    <artifactId>example-java-app</artifactId>
+    <artifactId>java-maven-template</artifactId>
     <version>0.0.1-SNAPSHOT</version>
 
-    <name>expense-tracker</name>
-    <description>Example java application</description>
+    <name>java-maven-template</name>
+    <description>java maven application</description>
 
     <properties>
         <maven.compiler.release>25</maven.compiler.release>

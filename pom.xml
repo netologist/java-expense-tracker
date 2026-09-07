@@ -24,9 +24,17 @@
         <mockito.version>5.21.0</mockito.version>
         <assertj.version>3.27.7</assertj.version>
         <errorprone.version>2.50.0</errorprone.version>
+        <archunit.version>1.5.0</archunit.version>
     </properties>
 
     <dependencies>
+
+        <!-- Error Prone -->
+        <dependency>
+            <groupId>com.google.errorprone</groupId>
+            <artifactId>error_prone_core</artifactId>
+            <version>${errorprone.version}</version>
+        </dependency>
 
         <!-- JUnit -->
         <dependency>
@@ -52,13 +60,13 @@
             <scope>test</scope>
         </dependency>
 
-        <!-- Error Prone -->
+        <!-- Architecture Tests -->
         <dependency>
-            <groupId>com.google.errorprone</groupId>
-            <artifactId>error_prone_core</artifactId>
-            <version>${errorprone.version}</version>
+            <groupId>com.tngtech.archunit</groupId>
+            <artifactId>archunit-junit6</artifactId>
+            <version>${archunit.version}</version>
+            <scope>test</scope>
         </dependency>
-
     </dependencies>
 
     <build>

@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+JAR_FILE="$ROOT_DIR/target/expense-tracker-app-0.0.1-SNAPSHOT.jar"
+CP_FILE="$ROOT_DIR/target/classpath.txt"
+
+if [[ ! -f "$JAR_FILE" || ! -f "$CP_FILE" ]]; then
+    echo "[expense-tracker] Building application and classpath..." >&2
+    "$ROOT_DIR/mvnw" -f "$ROOT_DIR/pom.xml" package -DskipTests -Dspotless.check.skip=true -q
+    "$ROOT_DIR/mvnw" -f "$ROOT_DIR/pom.xml" dependency:build-classpath -Dmdep.outputFile="$CP_FILE" -Dsilent=true > /dev/null
+fi
+
+CLASSPATH="$JAR_FILE:$(cat "$CP_FILE")"
+
+exec java -cp "$CLASSPATH" com.hozgan.expensetracker.ExpenseTrackerApplication "$@"

@@ -5,7 +5,6 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import com.hozgan.expensetracker.application.sync.OverwriteNotAllowedException;
 import com.hozgan.expensetracker.infrastructure.sync.S3ExpenseSyncAdapter;
-import com.hozgan.expensetracker.infrastructure.sync.S3ExpenseSyncConfig;
 import java.io.IOException;
 import java.net.URI;
 import java.nio.file.Files;

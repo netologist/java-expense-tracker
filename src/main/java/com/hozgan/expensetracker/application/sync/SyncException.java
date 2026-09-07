@@ -1,8 +1,10 @@
 package com.hozgan.expensetracker.application.sync;
 
+import java.io.Serial;
+
 public class SyncException extends RuntimeException {
 
-  private static final long serialVersionUID = 1L;
+  @Serial private static final long serialVersionUID = 1L;
 
   public SyncException(String message) {
     super(message);

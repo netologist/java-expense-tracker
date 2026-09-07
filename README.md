@@ -65,7 +65,7 @@ Dependencies such as the following should be introduced only when a real feature
 
 # CLI Commands
 
-The CLI binary or Maven runner provides the following command tree:
+The application can be run directly using the wrapper scripts (`./expense-tracker` or `./bin/expense-tracker`) or via `make`:
 
 ```text
 expense-tracker
@@ -76,6 +76,28 @@ expense-tracker
     ├── push
     └── pull
 ```
+
+### Makefile Commands
+
+| Command | Description |
+|---|---|
+| `make help` | Show all available targets with descriptions |
+| `make build` | Build application JAR and generate cached classpath |
+| `make test` | Run unit tests |
+| `make it` | Run integration tests (requires Docker for MinIO) |
+| `make verify` | Run full verification pipeline (Spotless, ErrorProne, tests, ITs, JaCoCo) |
+| `make format` | Apply Spotless code formatting |
+| `make format-check` | Check code formatting |
+| `make run ARGS="..."` | Run CLI application with arguments |
+| `make add ARGS="..."` | Add an expense |
+| `make list` | List all expenses |
+| `make remove ARGS="..."` | Remove an expense by ID |
+| `make sync-push` | Upload local expenses to S3/MinIO |
+| `make sync-pull` | Download expenses from S3/MinIO |
+| `make compose-up` | Start local MinIO container |
+| `make compose-down` | Stop local MinIO container |
+| `make compose-reset` | Stop local MinIO and delete volume |
+| `make clean` | Clean build directory |
 
 ## 1. Add Expense
 

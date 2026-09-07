@@ -6,15 +6,14 @@
           http://maven.apache.org/POM/4.0.0
           https://maven.apache.org/xsd/maven-4.0.0.xsd">
 
-
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.hozgan</groupId>
-    <artifactId>expense-tracker</artifactId>
+    <artifactId>example-java-app</artifactId>
     <version>0.0.1-SNAPSHOT</version>
 
     <name>expense-tracker</name>
-    <description>Expense Tracker CLI demo application</description>
+    <description>Example java application</description>
 
     <properties>
         <maven.compiler.release>25</maven.compiler.release>
@@ -226,6 +225,17 @@
                         </configuration>
                     </execution>
                 </executions>
+            </plugin>
+            <plugin>
+                <groupId>com.google.cloud.tools</groupId>
+                <artifactId>jib-maven-plugin</artifactId>
+                <version>3.5.2</version>
+
+                <configuration>
+                    <to>
+                        <image>${project.artifactId}:latest</image>
+                    </to>
+                </configuration>
             </plugin>
         </plugins>
     </build>

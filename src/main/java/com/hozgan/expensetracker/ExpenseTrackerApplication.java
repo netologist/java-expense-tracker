@@ -15,24 +15,27 @@ import com.hozgan.expensetracker.cli.sync.SyncCliCommand;
 import com.hozgan.expensetracker.infrastructure.persistence.JsonExpenseRepository;
 import com.hozgan.expensetracker.infrastructure.sync.S3ExpenseSyncAdapter;
 import com.hozgan.expensetracker.infrastructure.sync.S3ExpenseSyncConfig;
+import io.github.cdimascio.dotenv.Dotenv;
 import java.nio.file.Path;
 import picocli.CommandLine;
 
 public final class ExpenseTrackerApplication {
 
   public static void main(String[] args) {
-    Path localFilePath =
-        Path.of(
-            System.getProperty(
-                "expense.tracker.data.file",
-                System.getenv().getOrDefault("EXPENSE_TRACKER_DATA_FILE", "expenses.json")));
+    Dotenv dotenv = Dotenv.configure().ignoreIfMissing().load();
+
+    String dataFilePath = System.getProperty("expense.tracker.data.file");
+    if (dataFilePath == null || dataFilePath.isBlank()) {
+      dataFilePath = dotenv.get("EXPENSE_TRACKER_DATA_FILE", "expenses.json");
+    }
+    Path localFilePath = Path.of(dataFilePath);
 
     var expenseRepository = new JsonExpenseRepository(localFilePath);
     var addExpenseUseCase = new AddExpenseUseCase(expenseRepository);
     var listExpensesUseCase = new ListExpensesUseCase(expenseRepository);
     var removeExpenseUseCase = new RemoveExpenseUseCase(expenseRepository);
 
-    var syncConfig = S3ExpenseSyncConfig.fromEnvironment();
+    var syncConfig = S3ExpenseSyncConfig.fromEnvironment(dotenv);
     var syncPort = new S3ExpenseSyncAdapter(syncConfig);
     var pushExpensesUseCase = new PushExpensesUseCase(syncPort, localFilePath);
     var pullExpensesUseCase = new PullExpensesUseCase(syncPort, localFilePath);

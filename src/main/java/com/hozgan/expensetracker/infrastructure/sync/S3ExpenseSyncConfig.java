@@ -1,5 +1,6 @@
 package com.hozgan.expensetracker.infrastructure.sync;
 
+import io.github.cdimascio.dotenv.Dotenv;
 import java.net.URI;
 import java.util.Objects;
 
@@ -28,27 +29,34 @@ public record S3ExpenseSyncConfig(
   }
 
   public static S3ExpenseSyncConfig fromEnvironment() {
-    String bucket = getPropertyOrEnv("expense.tracker.s3.bucket", "EXPENSE_TRACKER_S3_BUCKET");
+    return fromEnvironment(Dotenv.configure().ignoreIfMissing().load());
+  }
+
+  public static S3ExpenseSyncConfig fromEnvironment(Dotenv dotenv) {
+    Objects.requireNonNull(dotenv, "dotenv must not be null");
+    String bucket =
+        getPropertyOrEnv(dotenv, "expense.tracker.s3.bucket", "EXPENSE_TRACKER_S3_BUCKET");
     if (bucket == null || bucket.isBlank()) {
       bucket = "expense-tracker";
     }
 
-    String region = getPropertyOrEnv("expense.tracker.aws.region", "EXPENSE_TRACKER_AWS_REGION");
+    String region =
+        getPropertyOrEnv(dotenv, "expense.tracker.aws.region", "EXPENSE_TRACKER_AWS_REGION");
     if (region == null || region.isBlank()) {
       region = DEFAULT_REGION;
     }
 
     String endpointStr =
-        getPropertyOrEnv("expense.tracker.s3.endpoint", "EXPENSE_TRACKER_S3_ENDPOINT");
+        getPropertyOrEnv(dotenv, "expense.tracker.s3.endpoint", "EXPENSE_TRACKER_S3_ENDPOINT");
     URI endpoint = (endpointStr != null && !endpointStr.isBlank()) ? URI.create(endpointStr) : null;
 
     String accessKey =
-        getPropertyOrEnv("expense.tracker.s3.access.key", "EXPENSE_TRACKER_S3_ACCESS_KEY");
+        getPropertyOrEnv(dotenv, "expense.tracker.s3.access.key", "EXPENSE_TRACKER_S3_ACCESS_KEY");
     String secretKey =
-        getPropertyOrEnv("expense.tracker.s3.secret.key", "EXPENSE_TRACKER_S3_SECRET_KEY");
+        getPropertyOrEnv(dotenv, "expense.tracker.s3.secret.key", "EXPENSE_TRACKER_S3_SECRET_KEY");
 
     String objectKey =
-        getPropertyOrEnv("expense.tracker.s3.object.key", "EXPENSE_TRACKER_S3_OBJECT_KEY");
+        getPropertyOrEnv(dotenv, "expense.tracker.s3.object.key", "EXPENSE_TRACKER_S3_OBJECT_KEY");
     if (objectKey == null || objectKey.isBlank()) {
       objectKey = DEFAULT_OBJECT_KEY;
     }
@@ -56,12 +64,12 @@ public record S3ExpenseSyncConfig(
     return new S3ExpenseSyncConfig(bucket, region, endpoint, accessKey, secretKey, objectKey);
   }
 
-  private static String getPropertyOrEnv(String propertyName, String envName) {
+  private static String getPropertyOrEnv(Dotenv dotenv, String propertyName, String envName) {
     String value = System.getProperty(propertyName);
     if (value != null && !value.isBlank()) {
       return value.trim();
     }
-    value = System.getenv(envName);
+    value = dotenv.get(envName);
     if (value != null && !value.isBlank()) {
       return value.trim();
     }

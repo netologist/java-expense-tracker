@@ -1,7 +1,5 @@
 # Java Maven Template
 
-> **Note:** This repository is an example fintech project — an expense tracker — created from the [java-maven-template](https://github.com/netologist/java-maven-template). You can inspect it as a reference to see how a real application evolves out of the template.
-
 A production-oriented, Spring-free Java Maven project template with a strong local and CI quality pipeline.
 
 This template is designed as a solid starting point for Java backend and fintech projects that prefer:
